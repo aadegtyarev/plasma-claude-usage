@@ -1,0 +1,124 @@
+#!/usr/bin/env python3
+"""Remaining Claude subscription limits for the Plasma widget.
+
+Claude Code passes `rate_limits` to its status line command after each API
+response. `claude-usage record` is meant to be that command: it keeps the
+latest readings in a state file and prints nothing. `claude-usage` prints
+them as one line of JSON, or {"error": <code>}; the widget owns all
+user-facing text.
+"""
+
+import json
+import os
+import sys
+import tempfile
+import time
+from pathlib import Path
+
+WINDOWS = ("five_hour", "seven_day")
+# Readings of one window may carry slightly different reset times, while windows are hours apart.
+SAME_WINDOW_S = 3600
+
+
+class UsageError(Exception):
+    def __init__(self, code):
+        super().__init__(code)
+        self.code = code
+
+
+def state_path():
+    base = os.environ.get("XDG_STATE_HOME") or os.path.expanduser("~/.local/state")
+    return Path(base) / "plasma-claude-usage" / "rate-limits.json"
+
+
+def load_state(path):
+    try:
+        return json.loads(path.read_text())
+    except (OSError, ValueError):
+        return {}
+
+
+def save_state(path, state):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.NamedTemporaryFile("w", dir=path.parent, delete=False) as f:
+        json.dump(state, f)
+    os.replace(f.name, path)
+
+
+def parse_window(raw):
+    try:
+        return {"used_percentage": float(raw["used_percentage"]), "resets_at": int(raw["resets_at"])}
+    except (KeyError, TypeError, ValueError):
+        return None
+
+
+def newer_window(stored, incoming):
+    # Every Claude Code session reports here, and an idle one re-renders its status line with the
+    # numbers of its last answer. Usage only grows within a window, so a lower reading is an old one.
+    if not incoming:
+        return stored
+    if not stored or incoming["resets_at"] > stored["resets_at"] + SAME_WINDOW_S:
+        return incoming
+    if incoming["resets_at"] < stored["resets_at"] - SAME_WINDOW_S:
+        return stored
+    return incoming if incoming["used_percentage"] >= stored["used_percentage"] else stored
+
+
+def record(payload, path, now):
+    limits = payload.get("rate_limits") or {}
+    incoming = {}
+    for name in WINDOWS:
+        window = parse_window(limits.get(name))
+        if window:
+            incoming[name] = window
+    stored = load_state(path).get("windows", {})
+    if incoming:
+        if all(newer_window(stored.get(name), window) is window for name, window in incoming.items()):
+            save_state(path, {"windows": {**stored, **incoming}, "recordedAt": int(now)})
+    elif not path.exists():
+        # Tells "the status line is not set up" apart from "Claude Code sends no limits".
+        save_state(path, {"windows": {}, "recordedAt": None})
+
+
+def summarize(state, now):
+    if not state:
+        raise UsageError("not_set_up")
+    windows = {}
+    for name, window in (state.get("windows") or {}).items():
+        if name not in WINDOWS:
+            continue
+        if window["resets_at"] <= now:
+            windows[name] = {"remainingPercent": 100, "resetsAt": None}
+        else:
+            remaining = max(0, min(100, int(100 - window["used_percentage"])))
+            windows[name] = {"remainingPercent": remaining, "resetsAt": window["resets_at"]}
+    if not windows:
+        raise UsageError("no_limits")
+    return {
+        "remainingPercent": min(w["remainingPercent"] for w in windows.values()),
+        "windows": windows,
+        "recordedAt": state.get("recordedAt"),
+    }
+
+
+def main(argv):
+    if argv == ["record"]:
+        try:
+            payload = json.load(sys.stdin)
+        except ValueError:
+            return 0
+        record(payload, state_path(), time.time())
+        return 0
+    if argv:
+        print("usage: claude-usage [record]", file=sys.stderr)
+        return 2
+    try:
+        output, status = summarize(load_state(state_path()), time.time()), 0
+    except UsageError as e:
+        output, status = {"error": e.code}, 1
+    print(json.dumps(output))
+    return status
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))

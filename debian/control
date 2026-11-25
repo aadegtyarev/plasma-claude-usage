@@ -1,0 +1,17 @@
+Source: plasma-claude-usage
+Section: kde
+Priority: optional
+Maintainer: Alexander Degtyarev <adegtyarev.ap@gmail.com>
+Build-Depends: debhelper-compat (= 13), gettext, python3
+Standards-Version: 4.6.2
+Homepage: https://github.com/aadegtyarev/plasma-claude-usage
+Rules-Requires-Root: no
+
+Package: plasma-claude-usage
+Architecture: all
+Depends: ${misc:Depends}, python3 (>= 3.10), plasma-framework
+Description: Plasma panel widget with the remaining Claude subscription limit
+ Shows how much of the Claude subscription limit is left (5-hour and weekly
+ windows) and when it resets. The numbers come from Claude Code, which passes
+ them to its status line command: set "claude-usage record" as the status
+ line in ~/.claude/settings.json.

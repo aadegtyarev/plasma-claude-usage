@@ -1,0 +1,25 @@
+{
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Alexander Degtyarev"
+            }
+        ],
+        "Category": "System Information",
+        "Description": "Remaining Claude subscription limit, as reported to Claude Code",
+        "Description[ru]": "Остаток лимита подписки Claude по данным Claude Code",
+        "Icon": "speedometer",
+        "Id": "io.github.plasma-claude-usage",
+        "License": "MIT",
+        "Name": "Claude Usage",
+        "Name[ru]": "Лимит Claude",
+        "ServiceTypes": [
+            "Plasma/Applet"
+        ],
+        "Version": "0.1.0",
+        "Website": "https://github.com/aadegtyarev/plasma-claude-usage"
+    },
+    "KPackageStructure": "Plasma/Applet",
+    "X-Plasma-API": "declarativeappletscript",
+    "X-Plasma-MainScript": "ui/main.qml"
+}

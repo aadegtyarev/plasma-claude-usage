@@ -1,0 +1,4 @@
+bin/claude-usage usr/bin/
+plasmoid/metadata.json usr/share/plasma/plasmoids/io.github.plasma-claude-usage/
+plasmoid/contents usr/share/plasma/plasmoids/io.github.plasma-claude-usage/
+build/locale usr/share/

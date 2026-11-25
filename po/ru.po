@@ -1,0 +1,58 @@
+# Russian translation of the plasma-claude-usage widget.
+# Installed as the gettext domain plasma_applet_io.github.plasma-claude-usage.
+msgid ""
+msgstr ""
+"Project-Id-Version: plasma-claude-usage\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+msgctxt "short label of the 5-hour limit window"
+msgid "5h"
+msgstr "5ч"
+
+msgctxt "short label of the weekly limit window"
+msgid "wk"
+msgstr "н"
+
+msgid "Claude limit unavailable"
+msgstr "Лимит Claude недоступен"
+
+msgid "Claude limit"
+msgstr "Лимит Claude"
+
+msgid "Updating…"
+msgstr "Обновляю…"
+
+msgid "Refresh"
+msgstr "Обновить"
+
+msgid "Open usage page"
+msgstr "Перейти в ЛК"
+
+msgid "%1: %2%, resets %3"
+msgstr "%1: %2%, сброс %3"
+
+msgid "%1: %2%"
+msgstr "%1: %2%"
+
+msgid "Data from %1"
+msgstr "Данные от %1"
+
+msgid "today at %1"
+msgstr "сегодня в %1"
+
+msgctxt "Qt date format of a day other than today"
+msgid "ddd, MMM d 'at' HH:mm"
+msgstr "ddd dd.MM 'в' HH:mm"
+
+msgid "No data: set claude-usage record as the Claude Code status line"
+msgstr "Нет данных: укажи claude-usage record в statusLine Claude Code"
+
+msgid "Claude Code has not reported limits yet"
+msgstr "Claude Code ещё не прислал лимиты"
+
+msgid "claude-usage gave no answer"
+msgstr "claude-usage не дал ответа"

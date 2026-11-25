@@ -1,0 +1,6 @@
+plasma-claude-usage (0.1.0) noble; urgency=medium
+
+  * Initial release: panel widget with the remaining Claude limit, read from
+    the Claude Code status line, with a menu to refresh and open the usage page.
+
+ -- Alexander Degtyarev <adegtyarev.ap@gmail.com>  Wed, 25 Nov 2026 16:00:00 +0300
